@@ -18,7 +18,7 @@ base_params = {
     "num_epochs": 400,
 
     "num_gpus": 4,  # 8
-    "batch_size_per_gpu": 32, # 32  # 64
+    "batch_size_per_gpu": 16, # 32  # 64
     "iter_size": 1,
 
     "save_summaries_steps": 1100,
@@ -26,7 +26,7 @@ base_params = {
     "print_samples_steps": 200,
     "eval_steps": 1100,
     "save_checkpoint_steps": 1100,
-    "logdir": "experiments/las-librispeech/{}".format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')),
+    "logdir": "experiments/las_librispeech/{}".format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')),
 
     "optimizer": "Adam",
     "optimizer_params": {
@@ -94,19 +94,20 @@ base_params = {
 
         "attention_params": {
             "attention_dim": 256,
-            "attention_type": "bahadanu",
-            # "attention_type": "chorowski",
-            # "use_coverage": True,
+            "attention_type": "chorowski",
+            "use_coverage": True,
             "num_heads": 1,
-            "plot_attention": False,
-
+            "plot_attention": True,
         },
 
         "rnn_type": "lstm",
         "hidden_dim": 512,
-        "num_layers": 1,
+        "num_layers": 2,
 
         "dropout_keep_prob": 0.8,
+
+        "beam_width": 4,
+        "use_language_model": False,
     },
     "loss": BasicSequenceLoss,
     "loss_params": {
@@ -128,8 +129,8 @@ train_params = {
         "vocab_file": "open_seq2seq/test_utils/toy_speech_data/vocab.txt",
         "dataset_files": [
             "data/librispeech/librivox-train-clean-100.csv",
-            "data/librispeech/librivox-train-clean-360.csv",
-            "data/librispeech/librivox-train-other-500.csv",
+            # "data/librispeech/librivox-train-clean-360.csv",
+            # "data/librispeech/librivox-train-other-500.csv",
         ],
         "max_duration": 16.7,
         "shuffle": True,
@@ -145,6 +146,20 @@ eval_params = {
         "vocab_file": "open_seq2seq/test_utils/toy_speech_data/vocab.txt",
         "dataset_files": [
             "data/librispeech/librivox-dev-clean.csv",
+        ],
+        "shuffle": False,
+        "autoregressive": True,
+    },
+}
+
+infer_params = {
+    "data_layer": Speech2TextDataLayer,
+    "data_layer_params": {
+        "num_audio_features": 80,
+        "input_type": "logfbank",
+        "vocab_file": "open_seq2seq/test_utils/toy_speech_data/vocab.txt",
+        "dataset_files": [
+            "data/librispeech/librivox-test-clean.csv",
         ],
         "shuffle": False,
         "autoregressive": True,

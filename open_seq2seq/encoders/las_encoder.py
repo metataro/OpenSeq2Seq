@@ -401,7 +401,6 @@ class ListenAttendSpellConvEncoder(Encoder):
                     )
                     src_length = (src_length - pool_size[0]) // pool_strides[0] + 1
 
-        print(conv_feats.get_shape())
         f = conv_feats.get_shape().as_list()[2]
         c = conv_feats.get_shape().as_list()[3]
         fc = f * c
