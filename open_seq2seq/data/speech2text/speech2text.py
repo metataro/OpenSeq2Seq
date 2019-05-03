@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
 
+import os.path
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -135,7 +136,9 @@ class Speech2TextDataLayer(DataLayer):
     if self.params["interactive"]:
       return
     for csv in params['dataset_files']:
+      dir = os.path.dirname(csv)
       files = pd.read_csv(csv, encoding='utf-8')
+      files.wav_filename = files.wav_filename.apply(lambda file: os.path.abspath(os.path.join(dir, file)))
       if self._files is None:
         self._files = files
       else:
