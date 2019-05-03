@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import math
 import os
 import time
+import pathlib
 
 import tensorflow as tf
 
@@ -227,11 +228,9 @@ class RunEvaluationHook(tf.train.SessionRunHook):
       # saving the best validation model
       if self._model.params['save_checkpoint_steps'] and \
          total_loss < self._best_eval_loss:
-        import pathlib
         path = pathlib.Path(os.path.join(self._model.params['logdir'], 'best_models',
                          'val_loss={:.4f}-step'.format(total_loss)))
         path.parent.mkdir(parents=True, exist_ok=True)
-        print(f"saving to {path}")
         self._best_eval_loss = total_loss
         self._eval_saver.save(
             run_context.session,
