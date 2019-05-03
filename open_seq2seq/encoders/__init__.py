@@ -13,7 +13,7 @@ from .ds2_encoder import DeepSpeech2Encoder
 from .resnet_encoder import ResNetEncoder
 from .tacotron2_encoder import Tacotron2Encoder
 from .tdnn_encoder import TDNNEncoder
-from .las_encoder import ListenAttendSpellEncoder
+from .las_encoder import ListenAttendSpellEncoder, ListenAttendSpellConvEncoder
 from .convs2s_encoder import ConvS2SEncoder
 from .lm_encoders import LMEncoder
 from .wavenet_encoder import WavenetEncoder
