@@ -11,14 +11,13 @@ from open_seq2seq.optimizers.lr_policies import poly_decay
 
 base_model = Speech2Text
 
-
 base_params = {
     "random_seed": 0,
     "use_horovod": True,   # True
     "num_epochs": 400,
 
     "num_gpus": 4,  # 8
-    "batch_size_per_gpu": 16, # 32  # 64
+    "batch_size_per_gpu": 12, # 32  # 64
     "iter_size": 1,
 
     "save_summaries_steps": 1100,
@@ -129,8 +128,8 @@ train_params = {
         "vocab_file": "open_seq2seq/test_utils/toy_speech_data/vocab.txt",
         "dataset_files": [
             "data/librispeech/librivox-train-clean-100.csv",
-            # "data/librispeech/librivox-train-clean-360.csv",
-            # "data/librispeech/librivox-train-other-500.csv",
+            "data/librispeech/librivox-train-clean-360.csv",
+            "data/librispeech/librivox-train-other-500.csv",
         ],
         "max_duration": 16.7,
         "shuffle": True,
