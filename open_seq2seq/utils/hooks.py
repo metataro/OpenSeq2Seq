@@ -230,8 +230,8 @@ class RunEvaluationHook(tf.train.SessionRunHook):
         self._best_eval_loss = total_loss
         self._eval_saver.save(
             run_context.session,
-            os.path.join(self._model.params['logdir'], 'best_models',
-                         'val_loss={:.4f}-step'.format(total_loss)),
+            os.path.abspath(os.path.join(self._model.params['logdir'], 'best_models',
+                         'val_loss={:.4f}-step'.format(total_loss))),
             global_step=step + 1,
         )
 
