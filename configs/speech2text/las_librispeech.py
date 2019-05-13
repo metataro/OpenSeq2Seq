@@ -16,7 +16,7 @@ base_params = {
     "use_horovod": True,   # True
     "num_epochs": 400,
 
-    "num_gpus": 2,  # 8
+    "num_gpus": 4,  # 8
     "batch_size_per_gpu": 12, # 32  # 64
     "iter_size": 1,
 
@@ -104,6 +104,8 @@ base_params = {
         "num_layers": 2,
 
         "dropout_keep_prob": 0.8,
+
+        "sampling_probability": 0.2,
 
         "beam_width": 4,
         "use_language_model": False,
