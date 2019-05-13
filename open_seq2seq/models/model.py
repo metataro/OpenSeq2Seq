@@ -238,8 +238,8 @@ class Model:
 
     self._params = copy.deepcopy(params)
 
-    if self._params.get('iter_size', 1) > 1 and hvd is None:
-      raise ValueError("iter_size is only supported in Horovod mode")
+    # if self._params.get('iter_size', 1) > 1 and hvd is None:
+    #   raise ValueError("iter_size is only supported in Horovod mode")
 
     # parameter checks
     self._mode = mode
