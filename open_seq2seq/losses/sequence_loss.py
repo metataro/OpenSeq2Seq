@@ -96,7 +96,7 @@ class BasicSequenceLoss(Loss):
     if self._do_mask:
       if tgt_lengths is None:
         raise ValueError("If you are masking loss, tgt_lengths can't be None")
-      mask = tf.sequence_mask(lengths=tgt_lengths - 1,
+      mask = tf.sequence_mask(lengths=tgt_lengths,
                               maxlen=current_ts,
                               dtype=logits.dtype)
     else:
@@ -203,7 +203,7 @@ class CrossEntropyWithSmoothing(Loss):
     if self._do_mask:
       if tgt_lengths is None:
         raise ValueError("If you are masking loss, tgt_lengths can't be None")
-      mask = tf.sequence_mask(lengths=tgt_lengths - 1,
+      mask = tf.sequence_mask(lengths=tgt_lengths,
                               maxlen=current_ts,
                               dtype=tf.float32)
     else:
@@ -435,7 +435,7 @@ class BasicSampledSequenceLoss(Loss):
         if tgt_lengths is None:
           raise ValueError(
               "If you are masking loss, tgt_lengths can't be None")
-        mask = tf.sequence_mask(lengths=tgt_lengths - 1,
+        mask = tf.sequence_mask(lengths=tgt_lengths,
                                 maxlen=current_ts,
                                 dtype=logits.dtype)
       else:

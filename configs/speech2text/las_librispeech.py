@@ -16,7 +16,7 @@ base_params = {
     "use_horovod": True,   # True
     "num_epochs": 400,
 
-    "num_gpus": 4,  # 8
+    "num_gpus": 2,  # 8
     "batch_size_per_gpu": 12, # 32  # 64
     "iter_size": 1,
 
@@ -63,7 +63,7 @@ base_params = {
                 "type": "conv2d", "repeat": 2,
                 "kernel_size": [3, 3], "stride": [1, 1],
                 "num_channels": 32, "padding": "SAME",
-                "pool": True, "pool_size": [2, 1], "pool_stride": [2, 1],
+                "pool": True, "pool_size": [2, 2], "pool_stride": [2, 2],
             }
         ],
 
