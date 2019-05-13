@@ -10,7 +10,7 @@ from open_seq2seq.parts.rnns.attention_wrapper import BahdanauAttention, \
     AttentionWrapper
 from open_seq2seq.parts.rnns.rnn_beam_search_decoder import BeamSearchDecoder
 from open_seq2seq.parts.rnns.utils import single_cell
-from open_seq2seq.parts.rnns.helper import TrainingHelper, GreedyEmbeddingHelper
+from open_seq2seq.parts.rnns.helper import TrainingHelper, GreedyEmbeddingHelper, ScheduledEmbeddingTrainingHelper, ScheduledOutputTrainingHelper
 from .decoder import Decoder
 
 cells_dict = {
@@ -83,6 +83,7 @@ class ListenAttendSpellDecoder(Decoder):
         'rnn_type': None,
         'hidden_dim': int,
         'num_layers': int,
+        'sampling_probability': float,
     })
 
   @staticmethod
@@ -121,6 +122,7 @@ class ListenAttendSpellDecoder(Decoder):
     self.END_SYMBOL = self.params['END_SYMBOL']
     self._tgt_vocab_size = self.params['tgt_vocab_size']
     self._tgt_emb_size = self.params['tgt_emb_size']
+    self._sampling_probability = self.params['sampling_probability']
 
   def _decode(self, input_dict):
     """Decodes representation into data.
@@ -287,7 +289,16 @@ class ListenAttendSpellDecoder(Decoder):
         output_attention=True,
         alignment_history=plot_attention,
     )
-
+    embedding_fn = lambda ids: tf.cast(
+        tf.nn.embedding_lookup(self._target_emb_layer, ids),
+        dtype=self.params['dtype'],
+    )
+    pos_embedding_fn = None
+    if use_positional_embedding:
+        pos_embedding_fn = lambda ids: tf.cast(
+            tf.nn.embedding_lookup(self.dec_pos_emb_layer, ids),
+            dtype=self.params['dtype'],
+        )
     if self._mode == "train":
       decoder_output_positions = tf.range(
           0,
@@ -305,23 +316,20 @@ class ListenAttendSpellDecoder(Decoder):
           tgt_input_vectors,
           dtype=self.params['dtype'],
       )
-      # helper = tf.contrib.seq2seq.TrainingHelper(
-      helper = TrainingHelper(
+      if self._sampling_probability > 0:
+          helper = ScheduledEmbeddingTrainingHelper(
+              inputs=tgt_input_vectors,
+              sequence_length=tgt_lengths,
+              sampling_probability=self._sampling_probability,
+              embedding=embedding_fn,
+          )
+      else:
+        # helper = tf.contrib.seq2seq.TrainingHelper(
+        helper = TrainingHelper(
           inputs=tgt_input_vectors,
           sequence_length=tgt_lengths,
-      )
-    elif self._mode == "infer" or self._mode == "eval":
-      embedding_fn = lambda ids: tf.cast(
-          tf.nn.embedding_lookup(self._target_emb_layer, ids),
-          dtype=self.params['dtype'],
-      )
-      pos_embedding_fn = None
-      if use_positional_embedding:
-        pos_embedding_fn = lambda ids: tf.cast(
-            tf.nn.embedding_lookup(self.dec_pos_emb_layer, ids),
-            dtype=self.params['dtype'],
         )
-
+    elif self._mode == "infer" or self._mode == "eval":
       # helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
       helper = GreedyEmbeddingHelper(
           embedding=embedding_fn,
