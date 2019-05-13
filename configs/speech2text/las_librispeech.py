@@ -5,7 +5,7 @@ import tensorflow as tf
 from open_seq2seq.data import Speech2TextDataLayer
 from open_seq2seq.decoders import ListenAttendSpellDecoder
 from open_seq2seq.encoders import ListenAttendSpellConvEncoder
-from open_seq2seq.losses import BasicSequenceLoss
+from open_seq2seq.losses import BasicSequenceLoss, CrossEntropyWithSmoothing
 from open_seq2seq.models import Speech2Text
 from open_seq2seq.optimizers.lr_policies import poly_decay
 
@@ -16,7 +16,7 @@ base_params = {
     "use_horovod": True,   # True
     "num_epochs": 400,
 
-    "num_gpus": 4,  # 8
+    "num_gpus": 2,  # 8
     "batch_size_per_gpu": 12, # 32  # 64
     "iter_size": 4,
 
@@ -110,11 +110,12 @@ base_params = {
         "beam_width": 4,
         "use_language_model": False,
     },
-    "loss": BasicSequenceLoss,
+    "loss": CrossEntropyWithSmoothing,
     "loss_params": {
         "offset_target_by_one": False,
         "average_across_timestep": True,
-        "do_mask": True
+        "do_mask": True,
+        "label_smoothing": 0.1
     },
 }
 
