@@ -269,16 +269,64 @@ def optimize_loss(loss,
             global_step=global_step,
         )
     else:
-      grad_updates = opt.apply_gradients(
-          post_process_gradients(
-              grads_and_vars,
-              lr=lr,
-              clip_gradients=clip_gradients,
-              larc_params=larc_params,
-              summaries=summaries,
-          ),
-          global_step=global_step,
-      )
+      if iter_size > 1:
+        grads_and_vars_accum = []
+        accum_ops = []
+        for grad, var in grads_and_vars:
+          # necessary to use tf.Variable directly to instantiate cudnn rnn cells
+          # which don't have explicit shape.
+          grad_accum = tf.Variable(
+              initial_value=tf.zeros_like(var),
+              name=grad.name.split(":")[0] + "_accum",
+              expected_shape=var.shape,
+              dtype=grad.dtype,
+              trainable=False,
+              validate_shape=bool(var.get_shape())
+          )
+          if isinstance(grad, tf.IndexedSlices):
+            add_grads = tf.scatter_nd_add(grad_accum, grad.indices,
+                                          grad.values / iter_size)
+          else:
+            add_grads = grad_accum + grad / iter_size
+
+          accum_ops.append(tf.assign(grad_accum, add_grads))
+          grads_and_vars_accum.append((grad_accum, var))
+
+        accum_op = tf.group(accum_ops)
+
+        def update_and_clear_op():
+          with tf.control_dependencies([accum_op]):
+            red_grad_updates = opt.apply_gradients(
+                post_process_gradients(
+                    grads_and_vars_accum,
+                    lr=lr,
+                    clip_gradients=clip_gradients,
+                    larc_params=larc_params,
+                    summaries=summaries,
+                ),
+                global_step=global_step,
+            )
+
+          with tf.control_dependencies([red_grad_updates]):
+            return tf.group([tf.assign(g, tf.zeros_like(g))
+                             for g, v in grads_and_vars_accum])
+
+        grad_updates = tf.cond(
+            pred=skip_update_ph,
+            true_fn=lambda: accum_op,
+            false_fn=update_and_clear_op,
+        )
+      else:
+          grad_updates = opt.apply_gradients(
+              post_process_gradients(
+                  grads_and_vars,
+                  lr=lr,
+                  clip_gradients=clip_gradients,
+                  larc_params=larc_params,
+                  summaries=summaries,
+              ),
+              global_step=global_step,
+          )
 
     # Ensure the train_tensor computes grad_updates.
     train_tensor = control_flow_ops.with_dependencies([grad_updates], loss)
