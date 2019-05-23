@@ -17,15 +17,15 @@ base_params = {
     "num_epochs": 400,
 
     "num_gpus": 2,  # 8
-    "batch_size_per_gpu": 64,  # 32  # 64
-    "iter_size": 2,
+    "batch_size_per_gpu": 32,  # 32  # 64
+    "iter_size": 4,
 
     "save_summaries_steps": 1100,
     "print_loss_steps": 10,
     "print_samples_steps": 200,
     "eval_steps": 1100,
     "save_checkpoint_steps": 1100,
-    "logdir": "experiments/las_librispeech/{}".format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')),
+    "logdir": "experiments/las_librispeech/small/{}".format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')),
 
     "optimizer": "Adam",
     "optimizer_params": {
@@ -63,7 +63,7 @@ base_params = {
                 "type": "conv2d", "repeat": 2,
                 "kernel_size": [3, 3], "stride": [2, 2],
                 "num_channels": 32, "padding": "SAME",
-                "pool": False,  # "pool_size": [2, 2], "pool_stride": [2, 2],
+                "pool": False,  "pool_size": [0, 0], "pool_stride": [0, 0],
             }
         ],
 
@@ -105,7 +105,7 @@ base_params = {
 
         "dropout_keep_prob": 0.8,
 
-        "sampling_probability": 0, # 0.2,
+        "sampling_probability": 0.0, # 0.2,
 
         "beam_width": 4,
         "use_language_model": False,
