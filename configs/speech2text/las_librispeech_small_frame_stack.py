@@ -17,9 +17,9 @@ base_params = {
     "use_horovod": False,   # True
     "num_epochs": 400,
 
-    "num_gpus": 2,  # 8
+    "num_gpus": 4,  # 8
     "batch_size_per_gpu": 32,  # 32  # 64
-    "iter_size": 4,
+    "iter_size": 2,
 
     "save_summaries_steps": 1100,
     "print_loss_steps": 10,
@@ -31,9 +31,12 @@ base_params = {
     "optimizer": "Adam",
     "optimizer_params": {
     },
-    "lr_policy": fixed_lr,
+    "lr_policy": poly_decay,
     "lr_policy_params": {
-        "learning_rate": 1e-3
+        "learning_rate": 1e-3,
+        "power": 1.,
+        "min_lr": 0.,
+        "warmup_steps": 5000
     },
 
     "max_grad_norm": 5.0,
@@ -66,7 +69,7 @@ base_params = {
             }
         ],
 
-        "dropout_keep_prob": 0.8,
+        "dropout_keep_prob": 1.0,
 
         "initializer": tf.contrib.layers.xavier_initializer,
         "initializer_params": {
@@ -79,7 +82,7 @@ base_params = {
     "decoder": ListenAttendSpellDecoder,
     "decoder_params": {
         "tgt_emb_size": 256,
-        "pos_embedding": True,
+        "pos_embedding": False,
 
         "attention_params": {
             "attention_dim": 256,
@@ -93,7 +96,7 @@ base_params = {
         "hidden_dim": 512,
         "num_layers": 1,
 
-        "dropout_keep_prob": 0.8,
+        "dropout_keep_prob": 1.0,
 
         "sampling_probability": 0.0,
 
