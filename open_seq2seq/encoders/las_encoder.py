@@ -408,8 +408,6 @@ class ListenAttendSpellConvEncoder(Encoder):
         fc = f * c
         conv_feats = tf.reshape(conv_feats, [batch_size, -1, fc])
 
-        conv_feats = tf.Print(conv_feats, [tf.shape(conv_feats)], message='shape_conv_feats=', summarize=100)
-
         rnn_feats = conv_feats
 
         # ----- Recurrent layers ---------------------------------------------
@@ -457,9 +455,6 @@ class ListenAttendSpellConvEncoder(Encoder):
                 )
                 src_length = (src_length - pool_size[0]) // strides[0] + 1
         outputs = rnn_feats
-
-        outputs = tf.Print(outputs, [src_length], message='src_length=', summarize=100)
-        outputs = tf.Print(outputs, [tf.shape(outputs)], message='shape_outputs=', summarize=100)
 
         return {
             'outputs': outputs,

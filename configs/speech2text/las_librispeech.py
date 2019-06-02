@@ -16,9 +16,9 @@ base_params = {
     "use_horovod": True,   # True
     "num_epochs": 400,
 
-    "num_gpus": 2,  # 8
+    "num_gpus": 4,  # 8
     "batch_size_per_gpu": 12, # 32  # 64
-    "iter_size": 4,
+    "iter_size": 2,
 
     "save_summaries_steps": 1100,
     "print_loss_steps": 10,
@@ -32,9 +32,13 @@ base_params = {
     },
     "lr_policy": poly_decay,
     "lr_policy_params": {
+        # "learning_rate": 1e-3,
+        # "power": 2.0,
+        # "min_lr": 1e-5
         "learning_rate": 1e-3,
-        "power": 2.0,
-        "min_lr": 1e-5
+        "power": 1.,
+        "min_lr": 0.,
+        "warmup_steps": 5000
     },
 
     "max_grad_norm": 1.0,
@@ -61,9 +65,9 @@ base_params = {
         "convnet_layers": [  # no CONV layers needed? with MFCC input
             {
                 "type": "conv2d", "repeat": 2,
-                "kernel_size": [3, 3], "stride": [1, 1],
+                "kernel_size": [3, 3], "stride": [2, 2],
                 "num_channels": 32, "padding": "SAME",
-                "pool": True, "pool_size": [2, 2], "pool_stride": [2, 2],
+                "pool": False, "pool_size": [2, 2], "pool_stride": [2, 2],
             }
         ],
 
@@ -88,19 +92,23 @@ base_params = {
 
     "decoder": ListenAttendSpellDecoder,
     "decoder_params": {
-        "tgt_emb_size": 256,
-        "pos_embedding": True,
+        # "tgt_emb_size": 256,
+        "pos_embedding": False,
 
         "attention_params": {
-            "attention_dim": 256,
-            "attention_type": "chorowski",
-            "use_coverage": True,
-            "num_heads": 1,
-            "plot_attention": True,
+            "attention_dim": 1024,
+            "attention_type": "bahadanu",
+            "num_heads": 4,
+            "plot_attention": False,
+            # "attention_dim": 256,
+            # "attention_type": "chorowski",
+            # "use_coverage": True,
+            # "num_heads": 1,
+            # "plot_attention": True,
         },
 
         "rnn_type": "lstm",
-        "hidden_dim": 512,
+        "hidden_dim": 1024,
         "num_layers": 2,
 
         "dropout_keep_prob": 0.8,

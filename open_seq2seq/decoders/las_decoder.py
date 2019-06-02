@@ -384,7 +384,10 @@ class ListenAttendSpellDecoder(Decoder):
     if not use_beam_search_decoder:
       outputs = tf.argmax(final_outputs.rnn_output, axis=-1)
       logits = final_outputs.rnn_output
-      return_outputs = [outputs, alignments, enc_src_lengths]
+      if plot_attention:
+        return_outputs = [outputs, alignments, enc_src_lengths]
+      else:
+        return_outputs = [outputs, enc_src_lengths]
     else:
       outputs = final_outputs.predicted_ids[:, :, 0]
       logits = final_outputs.predicted_ids[:, :, 0]
