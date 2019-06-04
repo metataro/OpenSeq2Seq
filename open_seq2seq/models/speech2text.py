@@ -3,6 +3,8 @@
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
 
+import sys
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -36,15 +38,16 @@ def sparse_tensor_to_chars_bpe(tensor):
 def dense_tensor_to_chars(tensor, idx2char, startindex, endindex):
   batch_size = len(tensor)
   text = [''] * batch_size
+  # np.set_printoptions(threshold=sys.maxsize, linewidth=sys.maxsize)
+  # print(tensor)
   for batch_num in range(batch_size):
     '''text[batch_num] = "".join([idx2char[idx] for idx in tensor[batch_num]
                                if idx not in [startindex, endindex]])'''
-
     text[batch_num] = ""
     for idx in tensor[batch_num]:
+      text[batch_num] += idx2char[idx]
       if idx == endindex:
         break
-      text[batch_num] += idx2char[idx]
   return text
 
 
@@ -226,7 +229,6 @@ class Speech2Text(EncoderDecoderModel):
     if self.plot_attention:
       attention_summary = plot_attention(
           output_values[1][0], pred_text, output_values[2][0], training_step)
-
     deco_print("Sample WER: {:.4f}".format(sample_wer), offset=4)
     deco_print("Sample target:     " + true_text, offset=4)
     deco_print("Sample prediction: " + pred_text, offset=4)
